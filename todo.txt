@@ -7,3 +7,5 @@
 - aggregate data from model prediction function and output into PaintEvent window
 - create statistics window 
 - add "There are x {champ} left" to statistics window
+- template matching for star level
+- resizing images to see if set 9.5 model works
