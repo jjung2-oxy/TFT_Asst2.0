@@ -4,10 +4,21 @@ import re
 
 curr_list = []
 
+def get_curr_list():
+    return curr_list
+
+def strip_parentheses(name):
+    # Find the position of the opening parenthesis
+    pos = name.find('(')
+    if pos != -1:
+        # Strip everything from the opening parenthesis onwards
+        return name[:pos].strip()
+    else:
+        return name.strip()
 def on_button_toggle(line):
     def toggle():
-        print(f"Button for line: '{line}' toggled!")
-        curr_list.append(line)
+        # print(f"Button for line: '{line}' toggled!")
+        curr_list.append(strip_parentheses(line))
         print("current list: ", curr_list)
     return toggle
 
@@ -36,7 +47,7 @@ def interface():
     root.title("Tkinter Dynamic Button Layout")
 
     # Read lines from a text file
-    with open("./Files/set10_champs.txt", "r") as file:
+    with open("./Files/set9_champs.txt", "r") as file:
         lines = [line.strip() for line in file if line.strip()]
 
     # Variables to control the layout
@@ -113,4 +124,5 @@ def interface():
     # Adjust the row and column span if needed
     clear_button.grid(row=num_rows * 2, column=num_columns // 2, sticky="nsew")
     # Start the GUI event loop
+
     return root
