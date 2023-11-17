@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import Toplevel, Label
 import re
 
-
+curr_list = []
 
 def on_button_toggle(line):
     def toggle():
@@ -36,11 +36,10 @@ def interface():
     root.title("Tkinter Dynamic Button Layout")
 
     # Read lines from a text file
-    with open("set10_champs.txt", "r") as file:
+    with open("Files/set10_champs.txt", "r") as file:
         lines = [line.strip() for line in file if line.strip()]
 
     # Variables to control the layout
-    curr_list = []
     button_height = 2  # Approximate height of each button
     button_width = 20  # Fixed width of each button in characters
     text_height = 1    # Height of the textbox
