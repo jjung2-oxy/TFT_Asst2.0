@@ -3,12 +3,15 @@ import Files.inference as inference
 import supervision as sv
 import os
 from datetime import datetime
+from dotenv import load_dotenv
 
 import pyautogui
 from pynput import keyboard, mouse
 
 from roboflow import Roboflow
-rf = Roboflow(api_key="SrnPXrXecCoFc4mT0BzF")
+
+load_dotenv()
+rf = Roboflow(api_key=os.environ.get("ROBOFLOW_API_KEY"))
 project = rf.workspace().project("firstsecondset")
 model = project.version(4).model
 
