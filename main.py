@@ -1,6 +1,8 @@
 import Files.OCR as OCR
 import threaded_main
 import Files.interface as interface
+import time
+
 import tkinter as tk
 import threading
 
@@ -13,6 +15,7 @@ def run_tkinter_app():
     root.mainloop()
 
 def main():
+    time.sleep(3)
     # Start the background task in a separate thread
     background_thread = threading.Thread(target=background_task)
     background_thread.start()

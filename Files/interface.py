@@ -36,7 +36,7 @@ def interface():
     root.title("Tkinter Dynamic Button Layout")
 
     # Read lines from a text file
-    with open("Files/set10_champs.txt", "r") as file:
+    with open("./Files/set10_champs.txt", "r") as file:
         lines = [line.strip() for line in file if line.strip()]
 
     # Variables to control the layout
