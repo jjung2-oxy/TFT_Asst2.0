@@ -6,3 +6,4 @@ PyAutoGUI
 pynput
 pytesseract
 thread
+python-Levenshtein

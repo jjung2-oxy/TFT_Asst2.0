@@ -31,9 +31,9 @@ def ocr(bbox, screenshot):
             (x, y, w, h) = (ocr_data['left'][i], ocr_data['top'][i], 
                             ocr_data['width'][i], ocr_data['height'][i])
             text = ocr_data['text'][i]
-            text_list.append(text)
+            
             # draw.rectangle([x, y, x + w, y + h], outline='red')
             # draw.text((x, y - 10), text, fill='red', font=font)
 
-    return text_list
+    return text
 
