@@ -3,3 +3,4 @@ __pycache__/
 .venv/
 pytesseract/
 Files/.env
+Files/Qt/

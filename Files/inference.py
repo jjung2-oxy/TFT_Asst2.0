@@ -29,15 +29,8 @@ if not os.path.exists(adjacent_folder_path):
 def on_press(key):
     global cursor_position
     try:
-        # If 'P' is pressed, capture the pixel position of the cursor, take a screenshot and print it
-
-        if key.char == 'o':
-            cursor_position = pyautogui.position()
-            print(f'Cursor Position: {cursor_position}')
-
         if key.char == 'p':
             
-
             now = datetime.now()
             timestamp_str = now.strftime("%Y%m%d_%H%M%S")
             screenshot_file_path = os.path.join(adjacent_folder_path, f'screenshot_{timestamp_str}.png')
@@ -56,8 +49,6 @@ def on_press(key):
             print("running inference...")
             
             print(model.predict(screenshot_file_path, confidence=40, overlap=30).json())
-
-            
 
         # If 'Q' is pressed, stop the keyboard and mouse listeners
         elif key.char == 'z':
