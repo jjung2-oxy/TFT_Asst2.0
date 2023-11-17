@@ -1,4 +1,4 @@
-import OCR 
+import Files.OCR as OCR 
 
 def main():
     # Define the bounding box (left, top, right, bottom)

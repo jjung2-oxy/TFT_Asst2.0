@@ -1,5 +1,5 @@
 import cv2
-import inference
+import Files.inference as inference
 import supervision as sv
 import os
 from datetime import datetime

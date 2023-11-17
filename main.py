@@ -1,6 +1,6 @@
-import OCR
+import Files.OCR as OCR
 import threaded_main
-import interface
+import Files.interface as interface
 import tkinter as tk
 import threading
 
