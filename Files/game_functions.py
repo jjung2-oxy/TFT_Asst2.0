@@ -10,6 +10,7 @@ import numpy as np
 import screen_coords as sc
 import re
 from PIL import Image
+from sklearn.cluster import DBSCAN
 
 
 def trPoint(x: int, y: int, window: Window) -> tuple:
@@ -112,10 +113,30 @@ def get_place(window: Window) -> int:
         return 0
 
     cropped_image = image[top:bottom, left:right]
-    save_image(os.path.join(os.getcwd(), "Images"), cropped_image)
+    
     num_rects = get_num_positions_from_image(cropped_image)
-    if len(num_rects) != 7:
-        print("Found", num_rects, "player rectangles")
+    # Returning far too many rectangles, need to group them
+    
+    rect_array = np.array(num_rects)
+
+    clustering = DBSCAN(eps=10, min_samples=1).fit(rect_array)
+
+    grouped_rectangles = {}
+    for rect, label in zip(num_rects, clustering.labels_):
+        if label in grouped_rectangles:
+            grouped_rectangles[label].append(rect)
+        else:
+            grouped_rectangles[label] = [rect]
+    avg_rectangles = []
+    for group in grouped_rectangles.values():
+        avg_x = np.mean([rect[0] for rect in group])
+        avg_y = np.mean([rect[1] for rect in group])
+        avg_w = np.mean([rect[2] for rect in group])
+        avg_h = np.mean([rect[3] for rect in group])
+        avg_rectangles.append((avg_x, avg_y, avg_w, avg_h))
+    
+    if len(avg_rectangles) != 7:
+        print("Found", len(num_rects), "player rectangles")
         return 0
     # should return 7 rectangles, need to find the gap
     tops = [rect[1] for rect in num_rects]
