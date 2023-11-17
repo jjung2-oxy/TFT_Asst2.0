@@ -3,7 +3,10 @@ from roboflow import Roboflow
 import os
 import pyautogui
 
-rf = Roboflow(api_key="SrnPXrXecCoFc4mT0BzF")
+from dotenv import load_dotenv
+
+load_dotenv()
+rf = Roboflow(api_key=os.environ.get("ROBOFLOW_API_KEY"))
 project = rf.workspace().project("firstsecondset")
 model = project.version(3).model
 
