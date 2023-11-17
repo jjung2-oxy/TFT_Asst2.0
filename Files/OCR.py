@@ -34,8 +34,8 @@ def ocr(bbox, screenshot):
 
             # draw.rectangle([x, y, x + w, y + h], outline='red')
             # draw.text((x, y - 10), text, fill='red', font=font)
-    if type(text) == 'NoneType':
-        text = ''
-        
-    return text
+    try:
+        return text
+    except:
+        return ""
 

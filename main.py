@@ -2,6 +2,7 @@ import Files.OCR as OCR
 import threaded_main
 import Files.interface as interface
 import time
+import Files.overlay as overlay
 
 import tkinter as tk
 import threading
@@ -11,7 +12,9 @@ def background_task():
     print("Background task is running")
 
 def run_tkinter_app():
+    overlay.main(1)
     root = interface.interface()
+    print("Running Tkinter app")
     root.mainloop()
 
 def main():
