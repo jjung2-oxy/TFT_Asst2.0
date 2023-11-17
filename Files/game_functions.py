@@ -1,6 +1,6 @@
 """Functions needed for the game to work."""
 from window import Window
-from game_utils import get_text_from_image, save_image, get_num_positions_from_image
+from game_utils import get_text_from_image, save_image, get_num_positions_from_image, find_arrow_height
 import pyautogui
 import os
 import time
@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 import screen_coords as sc
 import re
+from PIL import Image
 
 
 def trPoint(x: int, y: int, window: Window) -> tuple:
@@ -107,10 +108,15 @@ def get_place(window: Window) -> int:
 
     image = pyautogui.screenshot()
     image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+    if check_combat_data_mode(window, image):
+        return 0
 
     cropped_image = image[top:bottom, left:right]
-
+    save_image(os.path.join(os.getcwd(), "Images"), cropped_image)
     num_rects = get_num_positions_from_image(cropped_image)
+    if len(num_rects) != 7:
+        print("Found", num_rects, "player rectangles")
+        return 0
     # should return 7 rectangles, need to find the gap
     tops = [rect[1] for rect in num_rects]
     bots = [rect[1] + rect[3] for rect in num_rects]
@@ -134,6 +140,55 @@ def get_place(window: Window) -> int:
     big_diff_idx = deviations.index(max(deviations))
     # POV player is in position 1 greater than gap
     return big_diff_idx + 1
+
+def get_arrow(window: Window) -> int:
+
+    top = trY(sc.ARROW_TOP, window)
+    left = trX(sc.ARROW_LEFT, window)
+    bottom = trY(sc.ARROW_BOTTOM, window)
+    right = trX(sc.ARROW_RIGHT, window)
+
+    image = pyautogui.screenshot()
+    image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+
+    cropped_image = image[top:bottom, left:right]
+
+    arrow_height = find_arrow_height(cropped_image, os.path.join(os.getcwd(), "Files", "./arrow.png"))
+    if arrow_height == 0:
+        return 0
+    
+    player_heights = [trY(sc.FIRST_PLACE_HEIGHT - sc.ARROW_TOP + i*sc.PLAYER_HEIGHT_SPACING, window) for i in range(8)]
+        
+    closest_index = min(range(8), key=lambda i: abs(player_heights[i] - arrow_height))
+
+    return closest_index
+
+def check_combat_data_mode(window: Window, img) -> bool:
+    template = cv2.imread(os.path.join(os.getcwd(), "Files", "Combat_data_button_selected.png"))
+    img = cv2.resize(img, (2560, 1440), interpolation=cv2.INTER_AREA)
+    
+    img = img[sc.COMBAT_DATA_BUTTON_TOP:sc.COMBAT_DATA_BUTTON_BOT,
+              sc.COMBAT_DATA_BUTTON_LEFT:sc.COMBAT_DATA_BUTTON_RIGHT]
+
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+
+
+    res = cv2.matchTemplate(img_gray, template_gray, cv2.TM_CCOEFF_NORMED)
+
+    threshold = 0.98
+
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+
+    if max_val >= threshold:
+        # save_image(os.path.join(os.getcwd(), "Images"), img_gray, "True")
+        print("Currently in data mode")
+        return True
+    else:
+        # save_image(os.path.join(os.getcwd(), "Images"), img_gray, "False")
+        print("NOT Currently in data mode")
+        return False
+
 
 def update_tk(tk):
     """Update the tk window once."""

@@ -6,7 +6,7 @@ class Game:
         self.curr_round = '0-0'
         self.window = Window(0, 0, 2560, 1440)
         self.place = 1
-    
+        self.game_loop()
 
     def game_loop(self):
 
@@ -20,5 +20,13 @@ class Game:
                 continue
             # In a normal round, and the round has updated
             self.place = game_functions.get_place(self.window)
-                
+            print("In", self.place, "place")
+            self.arrow_position = game_functions.get_arrow(self.window)
+            print("Arrow in", self.arrow_position, "position")
 
+                
+def main():
+    Game()
+
+if __name__ == "__main__":
+    main()
