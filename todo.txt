@@ -1,0 +1,9 @@
+
+- gather set 10 data
+- train set 10 model
+- implement the model prediction function to run when key pressed
+    - integrate into overlay listener?
+
+- aggregate data from model prediction function and output into PaintEvent window
+- create statistics window 
+- add "There are x {champ} left" to statistics window
