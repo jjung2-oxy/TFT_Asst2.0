@@ -108,7 +108,7 @@ def get_place(window: Window) -> int:
 
     image = pyautogui.screenshot()
     image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-    if not check_data_mode(window, image):
+    if check_combat_data_mode(window, image):
         return 0
 
     cropped_image = image[top:bottom, left:right]
@@ -163,7 +163,7 @@ def get_arrow(window: Window) -> int:
 
     return closest_index
 
-def check_data_mode(window: Window, img) -> bool:
+def check_combat_data_mode(window: Window, img) -> bool:
     template = cv2.imread(os.path.join(os.getcwd(), "Files", "Combat_data_button_selected.png"))
     img = cv2.resize(img, (2560, 1440), interpolation=cv2.INTER_AREA)
     
@@ -181,10 +181,12 @@ def check_data_mode(window: Window, img) -> bool:
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
     if max_val >= threshold:
-        save_image(os.path.join(os.getcwd(), "Images"), img_gray, "True")
+        # save_image(os.path.join(os.getcwd(), "Images"), img_gray, "True")
+        print("Currently in data mode")
         return True
     else:
-        save_image(os.path.join(os.getcwd(), "Images"), img_gray, "False")
+        # save_image(os.path.join(os.getcwd(), "Images"), img_gray, "False")
+        print("NOT Currently in data mode")
         return False
 
 
