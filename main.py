@@ -15,7 +15,6 @@ def run_tkinter_app():
     root.mainloop()
 
 def main():
-    time.sleep(3)
     # Start the background task in a separate thread
     background_thread = threading.Thread(target=background_task)
     background_thread.start()

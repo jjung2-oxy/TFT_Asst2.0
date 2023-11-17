@@ -4,6 +4,9 @@ import re
 
 curr_list = []
 
+def get_curr_list():
+    return curr_list
+
 def on_button_toggle(line):
     def toggle():
         print(f"Button for line: '{line}' toggled!")
@@ -36,7 +39,7 @@ def interface():
     root.title("Tkinter Dynamic Button Layout")
 
     # Read lines from a text file
-    with open("./Files/set10_champs.txt", "r") as file:
+    with open("./Files/set9_champs.txt", "r") as file:
         lines = [line.strip() for line in file if line.strip()]
 
     # Variables to control the layout

@@ -1,8 +1,11 @@
 import Files.OCR as OCR 
 from Files.screen_coords import *
 import Files.champs_list as file
+import Files.interface as interface
+import time
 
 def main():
+    time.sleep(10)
     # Define the bounding box (left, top, right, bottom)
     # Capture and OCR
     # Show the annotated image
@@ -22,7 +25,16 @@ def main():
         text_list.append(closest)
         
     print(text_list)
+    
+    curr_list = interface.get_curr_list()
+    for champ in text_list:
+        if champ not in curr_list:
+            print(f"The champ '{champ}' is not in the desired list.")
+        else:
+            print(f"The champ '{champ}' is in the desired list.")
 
+    
+    
 
 
 
