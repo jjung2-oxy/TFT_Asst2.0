@@ -7,6 +7,7 @@ Pillow
 PyAutoGUI
 pynput
 pytesseract
-thread
+threading
 python-Levenshtein
 PyQt5
+ultralytics
