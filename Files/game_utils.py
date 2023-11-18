@@ -62,13 +62,10 @@ def get_num_positions_from_image(img):
     health_rects = []
     for pt in zip(*loc[::-1]):
         health_rects.append((pt[0], pt[1], pt[0] + w, pt[1] + h))
-        cv2.rectangle(img, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+        # cv2.rectangle(img, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
 
-    save_image(os.path.join(os.getcwd(), "Images"), img, "Bbox")
+    # save_image(os.path.join(os.getcwd(), "Images"), img, "Bbox")
     return health_rects
-    
-
-    
 
 
 def save_image(path, img, name=''):

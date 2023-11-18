@@ -118,8 +118,10 @@ def get_place(window: Window) -> int:
     # Returning far too many rectangles, need to group them
     
     rect_array = np.array(num_rects)
+    if not len(rect_array):
+        return 0
 
-    clustering = DBSCAN(eps=10, min_samples=1).fit(rect_array)
+    clustering = DBSCAN(eps=5, min_samples=1).fit(rect_array)
 
     grouped_rectangles = {}
     for rect, label in zip(num_rects, clustering.labels_):
@@ -133,14 +135,13 @@ def get_place(window: Window) -> int:
         avg_y = np.mean([rect[1] for rect in group])
         avg_w = np.mean([rect[2] for rect in group])
         avg_h = np.mean([rect[3] for rect in group])
-        avg_rectangles.append((avg_x, avg_y, avg_w, avg_h))
-    
+        avg_rectangles.append((avg_x, avg_y, avg_w-avg_x, avg_h-avg_y))
     if len(avg_rectangles) != 7:
-        print("Found", len(num_rects), "player rectangles")
+        # print("Found", len(avg_rectangles), "player rectangles")
         return 0
     # should return 7 rectangles, need to find the gap
-    tops = [rect[1] for rect in num_rects]
-    bots = [rect[1] + rect[3] for rect in num_rects]
+    tops = [rect[1] for rect in avg_rectangles]
+    bots = [rect[1] + rect[3] for rect in avg_rectangles]
     
     tops.sort()
     bots.sort()
@@ -159,8 +160,8 @@ def get_place(window: Window) -> int:
             return 1
 
     big_diff_idx = deviations.index(max(deviations))
-    # POV player is in position 1 greater than gap
-    return big_diff_idx + 1
+    # POV player is in position 1 greater than gap + 1 bc 0 index
+    return big_diff_idx + 2
 
 def get_arrow(window: Window) -> int:
 
@@ -203,13 +204,50 @@ def check_combat_data_mode(window: Window, img) -> bool:
 
     if max_val >= threshold:
         # save_image(os.path.join(os.getcwd(), "Images"), img_gray, "True")
-        print("Currently in data mode")
+        # print("Currently in data mode")
         return True
     else:
         # save_image(os.path.join(os.getcwd(), "Images"), img_gray, "False")
-        print("NOT Currently in data mode")
+        # print("NOT Currently in data mode")
         return False
 
+def grab_enemy_board(window: Window) -> None:
+    top = trY(sc.ENEMY_BOARD_TOP, window)
+    left = trX(sc.ENEMY_BOARD_LEFT, window)
+    right = trX(sc.ENEMY_BOARD_RIGHT, window)
+    bottom = trY(sc.ENEMY_BOARD_BOTTOM, window)
+
+    image = pyautogui.screenshot()
+    image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+    cropped_image = image[top:bottom, left:right]
+    print("Grabbing Enemy Board")
+    save_image(os.path.join(os.getcwd(), "unlabeled_data"), cropped_image)
+
+def get_timer(window: Window) -> int:
+    top = trY(sc.ROUND_TIMER_TOP, window)
+    left = trX(sc.ROUND_TIMER_LEFT, window)
+    right = trX(sc.ROUND_TIMER_RIGHT, window)
+    bottom = trY(sc.ROUND_TIMER_BOT, window)
+
+    image = pyautogui.screenshot()
+    image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+    cropped_image = image[top:bottom, left:right]
+
+    timerstr = get_text_from_image(cropped_image)
+    time = re.findall(r"\b\d{1,2}\b", timerstr)
+
+    if time:
+        return int(time[0])
+    return -1
+
+def next_timer_state(old_state):
+    states = ("preparation", "transition_1", "combat", "transition_2")
+    ind = states.index(old_state)
+    if ind == 3:
+        new_ind = 0
+    else:
+        new_ind = ind+1
+    return states[new_ind]
 
 def update_tk(tk):
     """Update the tk window once."""
