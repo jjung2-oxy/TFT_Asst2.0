@@ -4,3 +4,4 @@ __pycache__/
 pytesseract/
 Files/.env
 Files/Qt/
+.vscode/
