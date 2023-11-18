@@ -11,3 +11,4 @@ threading
 python-Levenshtein
 PyQt5
 ultralytics
+scikit-learn
