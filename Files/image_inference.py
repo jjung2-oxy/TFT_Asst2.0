@@ -13,20 +13,33 @@ captured_output = io.StringIO()
 sys.stdout = captured_output
 '''
 
-model = YOLO("/Users/jordanjung/Desktop/TFTbot2.0/Files/weights/best.pt")
-result = model.predict("/Users/jordanjung/Desktop/TFTbot2.0/Files/train_images/blank.jpg", task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800)
+model = YOLO("./Files/weights/best.pt")
 
-unit_ids = result[0].boxes.cls
-champ_list = result[0].names
+def predict(imagepath):
+    result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800)
 
-# Here's a Python code snippet that converts the string representation of a PyTorch tensor
-# to a list of integers:
-integers = unit_ids.int().tolist()
+    unit_ids = result[0].boxes.cls
+    champ_list = result[0].names
 
-for i in integers:
-    if i in champ_list:
-        print(f"{i} = {champ_list[i]}")
+    # Here's a Python code snippet that converts the string representation of a PyTorch tensor
+    # to a list of integers:
+    integers = unit_ids.int().tolist()
+
+    # PRINT CHAMPS
+    print_champions(integers, champ_list)
+
+    return integers
     
+
+def print_champions(integers, champ_list):
+    for i in integers:
+        if i in champ_list:
+            print(f"{i} = {champ_list[i]}")
+
+
+''' function to take screenshot, predict, delete'''
+imagepath = "./images/"
+
 
 '''
 # Reset stdout to its original state
