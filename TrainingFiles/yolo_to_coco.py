@@ -62,15 +62,16 @@ def yolo_to_coco(input_directory, output_path, image_width, image_height, catego
         json.dump(coco_format, out_file, indent=4)
 
 # Example usage
-input_directory = '/Users/jordanjung/Desktop/TFTbot2.0/unlabeled_data/YOLO_LABELS/'
-output_path = '/Users/jordanjung/Desktop/TFTbot2.0/unlabeled_data/instances_default.json'
+input_directory = r"C:\Users\Jorda\OneDrive\Desktop\TFTbot2.0\TrainingFiles\labels"
+output_path = r"C:\Users\Jorda\OneDrive\Desktop\TFTbot2.0\TrainingFiles\instances_default.json"
 image_width = 1440  # Replace with your actual image width
 image_height = 720  # Replace with your actual image height
 
 # Categories from your example JSON
 categories = [
-    {"id": 1, "name": "Cassiopeia", "supercategory": ""}
-    # ... (Add all categories as per your example JSON)
+    {"id": 1, "name": "Cassiopeia", "supercategory": ""},
+    {"id": 2, "name": "Annie", "supercategory": ""},
+    # ... (add other categories as needed)
 ]
 
 yolo_to_coco(input_directory, output_path, image_width, image_height, categories)

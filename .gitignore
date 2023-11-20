@@ -5,4 +5,4 @@ pytesseract/
 Files/.env
 Files/Qt/
 .vscode/
-unlabeled_data/
+TrainingFiles/

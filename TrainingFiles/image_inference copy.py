@@ -3,7 +3,7 @@ from ultralytics import YOLO
 import glob
 import os
 
-model = YOLO("/Users/jordanjung/Desktop/TFTbot2.0/unlabeled_data/general_bbox.pt")
+model = YOLO(r"C:\Users\Jorda\OneDrive\Desktop\TFTbot2.0\TrainingFiles\cassbboxV2.pt")
 
 def predict(imagepath):
     result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800, save_txt=True)
