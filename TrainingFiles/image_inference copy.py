@@ -3,7 +3,7 @@ from ultralytics import YOLO
 import glob
 import os
 
-model = YOLO(r"C:\Users\Jorda\OneDrive\Desktop\TFTbot2.0\TrainingFiles\cassbboxV2.pt")
+model = YOLO(r"C:\Users\Jorda\OneDrive\Desktop\TFTbot2.0\TrainingFiles\best (3).pt")
 
 def predict(imagepath):
     result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800, save_txt=True)
@@ -28,4 +28,4 @@ def predict_on_all_images(model, directory):
 script_directory = os.path.dirname(os.path.realpath(__file__))
 
 # Predict on all images
-predictions = predict_on_all_images(model, script_directory)
+predictions = predict_on_all_images(model, script_directory+"\images")
