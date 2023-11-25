@@ -1,51 +1,53 @@
-import pyautogui
-import time
 from ultralytics import YOLO
-import glob
+import OCR as OCR 
 import os
+import time
+import tempfile
+
 
 model = YOLO(r"Files/weights/DEPLOY.pt")
 
-def predict(imagepath):
-    result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800, save_txt=True)
-    champ_list = result[0].names
-    unit_ids = result[0].boxes.cls
-    return champ_list, unit_ids
-
-def delete_screenshot(filename):
-    if os.path.isfile(filename):
-        os.remove(filename)
-        print(f"Deleted screenshot: {filename}")
-    else:
-        print(f"File {filename} does not exist.")
-
-def screenshot():
-    # Define the starting point coordinates and the size of the screenshot
+def crop_image(img, name):
     start_x = 560
     start_y = 0
     width = 1440
     height = 720
+    crop_box = (start_x, start_y, start_x + width, start_y + height)
+    cropped_img = img.crop(crop_box)
+    cropped_img.save(name)
+    return name
 
-    # Take a screenshot with the specified dimensions
-    screenshot = pyautogui.screenshot(region=(start_x, start_y, width, height))
+def predict(imagepath):
+    try:
+        result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800)
+        champ_list = result[0].names
+        unit_ids = result[0].boxes.cls
+        return (champ_list, unit_ids)
+    except Exception as e:
+        print(f"Error during prediction: {e}")
+        return ([], [])
 
-    # Provide a name for the screenshot with the current timestamp
+def delete_screenshot(filename):
+    try:
+        if os.path.isfile(filename):
+            os.remove(filename)
+            print(f"Deleted screenshot: {filename}")
+        else:
+            print(f"File {filename} does not exist.")
+    except Exception as e:
+        print(f"Error deleting file: {e}")
 
-    filename = "screenshot.png"
-    # Save the screenshot
-    screenshot.save(filename)
-    return filename
+def print_champions(champ_list, unit_ids):
+    for unit_id in unit_ids:
+        if unit_id in champ_list:
+            print(f"{unit_id} = {champ_list[unit_id]}")
 
+def main(screenshot):
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+        cropped_filename = crop_image(screenshot, tmpfile.name)
+        result = predict(cropped_filename)
+        print_champions(result[0], result[1])
+        # delete_screenshot(cropped_filename)
 
-def print_champions(champ_list, units):
-    for i in units:
-        if i in champ_list:
-            print(f"{i} = {champ_list[i]}")
-
-filename = screenshot()
-champ_list, unit_ids = predict(f"{filename}")
-print_champions(champ_list, unit_ids)
-delete_screenshot(filename)
-
-
-    
+screenshot = OCR.capture(())
+main(screenshot)

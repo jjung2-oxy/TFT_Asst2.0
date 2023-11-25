@@ -37,5 +37,5 @@ def ocr(bbox, screenshot):
     try:
         return text
     except:
-        return ""
+        return "Nothing Returned"
 
