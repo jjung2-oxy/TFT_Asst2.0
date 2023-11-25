@@ -1,4 +1,5 @@
 from ultralytics import YOLO
+import PIL.ImageShow
 import OCR as OCR 
 import os
 import time
@@ -14,6 +15,7 @@ def crop_image(img, name):
     height = 720
     crop_box = (start_x, start_y, start_x + width, start_y + height)
     cropped_img = img.crop(crop_box)
+    cropped_img.show()
     cropped_img.save(name)
     return name
 
