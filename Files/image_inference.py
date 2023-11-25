@@ -1,57 +1,51 @@
-
+import pyautogui
+import time
 from ultralytics import YOLO
+import glob
+import os
 
-
-'''
-# Save the original stdout so we can restore it later
-original_stdout = sys.stdout
-
-# Create a string buffer to capture the output
-captured_output = io.StringIO()
-
-# Redirect stdout to the string buffer
-sys.stdout = captured_output
-'''
-
-model = YOLO("./Files/weights/best.pt")
+model = YOLO(r"Files/weights/DEPLOY.pt")
 
 def predict(imagepath):
-    result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800)
-
-    unit_ids = result[0].boxes.cls
+    result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800, save_txt=True)
     champ_list = result[0].names
+    unit_ids = result[0].boxes.cls
+    return champ_list, unit_ids
 
-    # Here's a Python code snippet that converts the string representation of a PyTorch tensor
-    # to a list of integers:
-    integers = unit_ids.int().tolist()
+def delete_screenshot(filename):
+    if os.path.isfile(filename):
+        os.remove(filename)
+        print(f"Deleted screenshot: {filename}")
+    else:
+        print(f"File {filename} does not exist.")
 
-    # PRINT CHAMPS
-    print_champions(integers, champ_list)
+def screenshot():
+    # Define the starting point coordinates and the size of the screenshot
+    start_x = 560
+    start_y = 0
+    width = 1440
+    height = 720
 
-    return integers
-    
+    # Take a screenshot with the specified dimensions
+    screenshot = pyautogui.screenshot(region=(start_x, start_y, width, height))
 
-def print_champions(integers, champ_list):
-    for i in integers:
+    # Provide a name for the screenshot with the current timestamp
+
+    filename = "screenshot.png"
+    # Save the screenshot
+    screenshot.save(filename)
+    return filename
+
+
+def print_champions(champ_list, units):
+    for i in units:
         if i in champ_list:
             print(f"{i} = {champ_list[i]}")
 
+filename = screenshot()
+champ_list, unit_ids = predict(f"{filename}")
+print_champions(champ_list, unit_ids)
+delete_screenshot(filename)
 
-''' function to take screenshot, predict, delete'''
-imagepath = "./images/"
 
-
-'''
-# Reset stdout to its original state
-sys.stdout = original_stdout
-
-# Now the output is stored in `captured_output` and you can use it.
-output_text = captured_output.getvalue()
-
-# Don't forget to close the StringIO object
-captured_output.close()
-
-# Now you can print it or use it as you wish
-print("Output:\n", output_text, "\n")
-'''
-
+    
