@@ -8,6 +8,7 @@ PyAutoGUI
 pynput
 pytesseract
 threading
+torch
 python-Levenshtein
 PyQt5
 ultralytics

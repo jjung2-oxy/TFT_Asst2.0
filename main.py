@@ -1,4 +1,3 @@
-import Files.OCR as OCR
 import threaded_main
 import Files.interface as interface
 import time
@@ -23,7 +22,7 @@ def main():
     background_thread.start()
 
     # Run Tkinter app on the main thread
-    '''run_tkinter_app()'''
+    run_tkinter_app()
 
 if __name__ == "__main__":
     main()
