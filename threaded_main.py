@@ -1,3 +1,4 @@
+import argparse
 import Files.OCR as OCR 
 import Files.image_inference as image_inference
 from Files.screen_coords import *
@@ -8,6 +9,12 @@ from pynput.keyboard import Listener, KeyCode, Controller, Key
 import threading
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-skp', '--simulate-keys', action='store_true', 
+                        help='Enable simulation of key presses')
+    args = parser.parse_args()
+    if args.simulate_keys:
+        print("Simulating keyboard input...\n\n\n")
     listener_thread = threading.Thread(target=start_listener, daemon=True)
     listener_thread.start()
     listener_thread.join()
@@ -59,6 +66,9 @@ def boardToModel():
             print(f"Captured screenshot #{index + 1}")
         print("Processing screenshots...")
         champions = image_inference.process_screenshots(screenshots)
+        if champions is None or not champions:
+            print("No champions processed or an error occurred.")
+            return  # Exit the function as there's nothing to process
         tally = {}
 
         # Iterate over the list and count each occurrence
@@ -105,5 +115,4 @@ def start_listener():
     with Listener(on_press=on_press) as listener:
         listener.join()
 
-if __name__ == "__main__":
-    main()
+

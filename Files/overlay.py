@@ -43,6 +43,13 @@ class CustomWindow(QMainWindow):
     def start_monitoring(self):
         self.listener.start()
 
+    def close_window(self):
+        # Stop any listeners or background tasks
+        self.stop_monitoring()
+
+        # Close the window
+        self.close()
+
     # def updateOverlay(self):
     #     self.update()
     #     print("Ive updated!")
@@ -96,6 +103,13 @@ def main(sc):
     pyautogui.press("t")
     pyautogui.keyUp("ctrl")
     pyautogui.keyUp("winleft")
+
+def close_window():
+    app = QApplication.instance()
+    for widget in app.topLevelWidgets():
+        if isinstance(widget, CustomWindow):
+            widget.close_window()
+    app.quit()
 
 if __name__ == "__main__":
     main(1)
