@@ -21,17 +21,15 @@ def crop_image(img, name):
     return name
 
 def predict(imagepath):
-    """
-    Run prediction on the image at the given path and return the results.
-    """
     try:
         result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800)
         champ_list = result[0].names
         unit_ids = result[0].boxes.cls
-        return (champ_list, unit_ids)
+        boxes = result[0].boxes.xyxy[0]  # Modify based on the actual structure
+        return champ_list, unit_ids, boxes
     except Exception as e:
         print(f"Error during prediction: {e}")
-        return ([], [])
+        return ([], [], [])
 
 def print_champions(champ_list, unit_ids):
     """
