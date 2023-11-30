@@ -31,9 +31,6 @@ def process_image(image_path):
     cv2.destroyAllWindows()
 
 
-
-
-
 def process_directory(directory):
     """
     Process all images in the given directory.

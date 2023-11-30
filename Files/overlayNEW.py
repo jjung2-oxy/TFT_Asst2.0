@@ -17,7 +17,8 @@ class OverlayApp:
     def run(self):
         self.custom_window.showFullScreen()
         self.enable_always_on_top()
-        sys.exit(self.app.exec_())
+        print("Running OverlayApp...")
+        # sys.exit(self.app.exec_())
 
     def enable_always_on_top(self):
         pyautogui.keyDown("ctrl")
@@ -32,7 +33,6 @@ class OverlayApp:
                 widget.close_window()
         self.app.quit()
         
-
 
 class CustomWindow(QMainWindow):
     keyPressed = pyqtSignal(KeyCode)
@@ -96,9 +96,3 @@ class CustomWindow(QMainWindow):
                 height = round((screen_coords.CHAMP_BOT * self.sc) - (screen_coords.CHAMP_TOP * self.sc))
                 width = round((screen_coords.CHAMP_RIGHT * self.sc) - (screen_coords.CHAMP_LEFT * self.sc))
                 painter1.drawRect(x + (spacing * idx), y, width, height)
-
-
-if __name__ == "__main__":
-    opc = 1  # Global opacity setting
-    overlay_app = OverlayApp(screen_scaling=1)
-    overlay_app.run()
