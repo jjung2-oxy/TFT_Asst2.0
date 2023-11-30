@@ -6,7 +6,6 @@ Pillow
 PyAutoGUI
 pynput
 pytesseract
-threading
 torch
 python-Levenshtein
 PyQt5
