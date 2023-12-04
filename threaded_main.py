@@ -91,13 +91,16 @@ def boardToModel():
 
 def on_press(key):
     try:
-        if key == KeyCode.from_char('\\'):
-            print("Backslash key pressed!")
+        # OCR
+        if key == KeyCode.from_char('d'):
+            print("d key pressed! \n ShopToOCR Running...")
             text_list = shopToOCR()
             print(text_list)
+        # BOARDTOMODEL
         elif key == KeyCode.from_char(']'):
-            print("']' key pressed!")
+            print("] key pressed! \n ShopToOCR Running...")
             boardToModel()
+        # DEBUG KEYBIND
         elif key == KeyCode.from_char('='):
             print("'=' key pressed! Triggering update_overlay for debugging.")
             debug = {
@@ -107,6 +110,7 @@ def on_press(key):
             4: [("ChampionA4", 2), ("ChampionB4", 1)]
             }
             updateOverlay(debug)  # Assuming updateOverlay can accept a list
+        # QUIT APPLICATIONS
         elif key == KeyCode.from_char('='):
             print("'-' key pressed! CHANGING CONTENTS.")
             debug = {

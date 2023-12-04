@@ -30,7 +30,7 @@ class OverlayApp:
 
 class CustomWindow(QMainWindow):
     keyPressed = pyqtSignal(KeyCode)
-    update_signal = pyqtSignal(list)
+    update_signal = pyqtSignal(dict)
 
     def __init__(self, app, screen_scaling, opacity, parent=None):
         super().__init__(parent)
@@ -70,10 +70,11 @@ class CustomWindow(QMainWindow):
     def paintEvent(self, event=None):
         painter = QPainter(self)
         painter.setOpacity(self.opacity)
-        self.highlight(painter)
+        painter1 = QPainter(self)
+        self.highlight(painter1)
         self.drawNewTextBox(painter, self.string_dict)  # Use the updated data
-  # Reset the flag after drawing
 
+    # Reset the flag after drawing
     def highlight(self, painter):
         painter.setPen(QPen(Qt.red, 5, Qt.SolidLine))
         for idx, champ in enumerate(self.curr_shop):
@@ -120,8 +121,6 @@ class CustomWindow(QMainWindow):
                 remaining_champs = self.champPool[f'{cost}_cost'] - count
                 painter.drawText(textbox_x + 10, y, f"  {name} - {count} tallied, {remaining_champs} remaining")
                 y += text_y_offset
-
-
 
 if __name__ == "__main__":
     overlay_app = OverlayApp(screen_scaling=1, opacity=0.8)

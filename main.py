@@ -23,6 +23,7 @@ def background_task():
     print("Background task is stopped")
 
 def run_overlay_app():
+    
     global overlay_app
     print("Running Overlay application...")
     overlay_app = overlayNEW.OverlayApp(screen_scaling=1)
@@ -62,7 +63,7 @@ def main():
     overlay_thread.start()
 
     # Run Tkinter app in the main thread
-    run_tkinter_app()
+    '''run_tkinter_app()'''
 
     # Wait for threads to complete
     background_thread.join()
