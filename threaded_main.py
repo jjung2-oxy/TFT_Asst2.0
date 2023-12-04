@@ -75,7 +75,7 @@ def boardToModel():
         champions = image_inference.process_screenshots(screenshots)
         if not champions:
             print("No champions processed or an error occurred.")
-            updateOverlay()
+            updateOverlay() # CURRENTLY STOPPING RIGHT HERE SINCE THERE ARE NO CHAMPIONS.
             return
 
         tally = {champion: champions.count(champion) for champion in set(champions)}
@@ -97,11 +97,16 @@ def on_press(key):
         elif key == KeyCode.from_char(']'):
             print("']' key pressed!")
             boardToModel()
+        elif key == KeyCode.from_char('='):
+            print("'=' key pressed! Triggering update_overlay for debugging.")
+            debug_string_list = ["Debug String 1", "Debug String 2", "Debug String 3"]
+            updateOverlay(debug_string_list)  # Assuming updateOverlay can accept a list
         elif key == KeyCode.from_char('['):
             print("Exiting program.")
             sys.exit(0)
     except Exception as e:
         print(f"Error in on_press: {e}")
+
 
 def start_listener():
     with Listener(on_press=on_press) as listener:
@@ -116,7 +121,11 @@ def getStats(tally, champion_info, champPool):
         else:
             pass  # Consider handling the case where the name is not in champion_info.
 
-def updateOverlay():
+def updateOverlay(debug_string_list):
     global overlay_app  # Ensure this is the instance of your overlay app
-    string_list = ["String 1", "String 2", "String 3"]
-    overlay_app.custom_window.update_signal.emit(string_list)
+    overlay_app.custom_window.update_signal.emit(debug_string_list)
+
+def getShop():
+    # Implement the logic to retrieve shop data
+    # This is just a placeholder example
+    return ["Item 1", "Item 2", "Item 3"]
