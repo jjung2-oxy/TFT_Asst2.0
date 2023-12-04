@@ -1,7 +1,6 @@
 __pycache__/
 .DS_Store
 .venv/
-pytesseract/
 Files/.env
 Files/Qt/
 .vscode/
