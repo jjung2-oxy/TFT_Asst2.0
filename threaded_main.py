@@ -82,8 +82,8 @@ def boardToModel():
         champPool = file.champPool
         champion_info = file.champion_info
         print("Done processing screenshots")
-        getStats(tally, champion_info, champPool)
-        updateOverlay()
+        stats_output = getStats(tally, champion_info, champPool)
+        updateOverlay(stats_output) # 
 
     except Exception as e:
         print(f"Error in boardToModel: {e}")
@@ -99,8 +99,8 @@ def on_press(key):
             boardToModel()
         elif key == KeyCode.from_char('='):
             print("'=' key pressed! Triggering update_overlay for debugging.")
-            debug_string_list = ["Debug String 1", "Debug String 2", "Debug String 3"]
-            updateOverlay(debug_string_list)  # Assuming updateOverlay can accept a list
+            debug = ['debug', 'debug', 'debug']
+            updateOverlay(debug)  # Assuming updateOverlay can accept a list
         elif key == KeyCode.from_char('['):
             print("Exiting program.")
             sys.exit(0)
@@ -113,17 +113,26 @@ def start_listener():
         listener.join()
 
 def getStats(tally, champion_info, champPool):
+    champions_by_cost = {}
     for name, count in tally.items():
-        if name in champion_info:
+        if name in champion_info and count > 0:
             champ_cost = champion_info[name]["cost"]
-            remaining_champs = champPool[f'{champ_cost}_cost'] - count
-            print(f"There are {remaining_champs} {name}'s left out of {champPool[f'{champ_cost}_cost']} ({champ_cost} cost)")
-        else:
-            pass  # Consider handling the case where the name is not in champion_info.
+            if champ_cost not in champions_by_cost:
+                champions_by_cost[champ_cost] = []
+            champions_by_cost[champ_cost].append((name, count))
 
-def updateOverlay(debug_string_list):
+    top_champions = {}
+    for cost, champs in champions_by_cost.items():
+        sorted_champs = sorted(champs, key=lambda x: x[1], reverse=True)[:3]
+        top_champions[cost] = sorted_champs
+
+    return top_champions
+
+
+
+def updateOverlay(stats_output):
     global overlay_app  # Ensure this is the instance of your overlay app
-    overlay_app.custom_window.update_signal.emit(debug_string_list)
+    overlay_app.custom_window.update_signal.emit(stats_output)
 
 def getShop():
     # Implement the logic to retrieve shop data

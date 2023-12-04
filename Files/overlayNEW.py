@@ -41,25 +41,28 @@ class CustomWindow(QMainWindow):
         self.opacity = opacity
         self.target_champs = []
         self.curr_shop = []
-        self.shouldDraw = False
-        self.string_list = []  # Initialize an empty list to store strings
-        self.draw_new_textbox = False
-
-        # Set window flags and attributes for transparency
+        self.string_dict = {}  # Initialize with an empty dictionary
+        self.champPool = {
+            '1_cost': 29,
+            '2_cost': 22,
+            '3_cost': 18,
+            '4_cost': 12
+            # Add more if needed
+        }
+        self.static_dict = {
+            1: [("ChampionA1", 5), ("ChampionB1", 3), ("ChampionC1", 2)],
+            2: [("ChampionA2", 4), ("ChampionB2", 3)],
+            3: [("ChampionA3", 6), ("ChampionB3", 4), ("ChampionC3", 1)],
+            4: [("ChampionA4", 2), ("ChampionB4", 1)]
+        }
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_NoSystemBackground, True)
-
         self.listener.start()
 
-        # Test call to update_overlay with static data
-        self.update_overlay(["Test String 1", "Test String 2"])
-
-    def update_overlay(self, string_list):
-        print("update_overlay called with:", string_list)  # Debug print
-        self.string_list = string_list
-        self.draw_new_textbox = True
-        self.update()
+    def update_overlay(self, stats_dict):
+        self.string_dict = self.static_dict  # Update the data for the textbox
+        self.update()  # Trigger a repaint
 
     def on_release(self, key):
         if hasattr(key, 'char') and key.char == 'd':
@@ -71,19 +74,11 @@ class CustomWindow(QMainWindow):
         self.close()
 
     def paintEvent(self, event=None):
-        if not self.shouldDraw and not self.draw_new_textbox:
-            return
-
-        self.curr_shop = tm.getShop()
-        self.target_chaps = interface.get_curr_list()
-
         painter = QPainter(self)
         painter.setOpacity(self.opacity)
         self.highlight(painter)
-
-        if self.draw_new_textbox:
-            self.drawNewTextBox(painter, self.string_list)
-            self.draw_new_textbox = False
+        self.drawNewTextBox(painter, self.string_dict)  # Use the updated data
+  # Reset the flag after drawing
 
     def highlight(self, painter):
         painter.setPen(QPen(Qt.red, 5, Qt.SolidLine))
@@ -99,22 +94,40 @@ class CustomWindow(QMainWindow):
         width = round((screen_coords.CHAMP_RIGHT - screen_coords.CHAMP_LEFT) * self.screen_scaling)
         painter.drawRect(x + (spacing * idx), y, width, height)
 
-    def drawNewTextBox(self, painter, string_list):
+    def drawNewTextBox(self, painter, stats_dict):
         textbox_x, textbox_y = 10, 10
-        textbox_width, textbox_height = 200, 100
+        textbox_width = 200  # Initial width, adjust as needed
+        text_y_offset = 20
+        y = textbox_y + text_y_offset
 
+        # Calculate the required height of the textbox
+        textbox_height = text_y_offset  # Start with the offset as initial height
+        for cost, champs in stats_dict.items():
+            textbox_height += text_y_offset  # Add space for the cost header
+            textbox_height += len(champs) * text_y_offset  # Add space for each champion
+
+        # Draw the textbox
         painter.setOpacity(1.0)  # Ensure full opacity for the textbox
         painter.setBrush(Qt.black)
         painter.setPen(QPen(Qt.white))
         painter.drawRect(textbox_x, textbox_y, textbox_width, textbox_height)
 
+        # Set the font for the text
         font = QFont()
         font.setPointSize(10)
         painter.setFont(font)
 
-        text_y_offset = 20
-        for i, text in enumerate(string_list):
-            painter.drawText(textbox_x + 10, textbox_y + text_y_offset + (i * 20), text)
+        # Draw the text inside the textbox
+        y = textbox_y + text_y_offset
+        for cost, champs in stats_dict.items():
+            painter.drawText(textbox_x + 10, y, f"Top champions for cost {cost}:")
+            y += text_y_offset
+            for name, count in champs:
+                remaining_champs = self.champPool[f'{cost}_cost'] - count
+                painter.drawText(textbox_x + 10, y, f"  {name} - {count} tallied, {remaining_champs} remaining")
+                y += text_y_offset
+
+
 
 if __name__ == "__main__":
     overlay_app = OverlayApp(screen_scaling=1, opacity=0.8)
