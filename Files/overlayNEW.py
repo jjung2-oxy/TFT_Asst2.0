@@ -41,7 +41,6 @@ class CustomWindow(QMainWindow):
         self.opacity = opacity
         self.target_champs = []
         self.curr_shop = []
-        self.string_dict = {}  # Initialize with an empty dictionary
         self.champPool = {
             '1_cost': 29,
             '2_cost': 22,
@@ -49,19 +48,14 @@ class CustomWindow(QMainWindow):
             '4_cost': 12
             # Add more if needed
         }
-        self.static_dict = {
-            1: [("ChampionA1", 5), ("ChampionB1", 3), ("ChampionC1", 2)],
-            2: [("ChampionA2", 4), ("ChampionB2", 3)],
-            3: [("ChampionA3", 6), ("ChampionB3", 4), ("ChampionC3", 1)],
-            4: [("ChampionA4", 2), ("ChampionB4", 1)]
-        }
+        self.string_dict = {}
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_NoSystemBackground, True)
         self.listener.start()
 
-    def update_overlay(self, stats_dict):
-        self.string_dict = self.static_dict  # Update the data for the textbox
+    def update_overlay(self, stat_dict):
+        self.string_dict = stat_dict  # Update the data for the textbox
         self.update()  # Trigger a repaint
 
     def on_release(self, key):

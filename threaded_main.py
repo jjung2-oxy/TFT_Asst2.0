@@ -77,7 +77,8 @@ def boardToModel():
             print("No champions processed or an error occurred.")
             updateOverlay() # CURRENTLY STOPPING RIGHT HERE SINCE THERE ARE NO CHAMPIONS.
             return
-
+        
+        # code here currently not reached
         tally = {champion: champions.count(champion) for champion in set(champions)}
         champPool = file.champPool
         champion_info = file.champion_info
@@ -99,7 +100,20 @@ def on_press(key):
             boardToModel()
         elif key == KeyCode.from_char('='):
             print("'=' key pressed! Triggering update_overlay for debugging.")
-            debug = ['debug', 'debug', 'debug']
+            debug = {
+            1: [("ChampionA1", 5), ("ChampionB1", 3), ("ChampionC1", 2)],
+            2: [("ChampionA2", 4), ("ChampionB2", 3)],
+            3: [("ChampionA3", 6), ("ChampionB3", 4), ("ChampionC3", 1)],
+            4: [("ChampionA4", 2), ("ChampionB4", 1)]
+            }
+            updateOverlay(debug)  # Assuming updateOverlay can accept a list
+        elif key == KeyCode.from_char('='):
+            print("'-' key pressed! CHANGING CONTENTS.")
+            debug = {
+                1: [("ChampionTest1", 4), ("ChampionTest2", 3)],
+                2: [("ChampionTest3", 5), ("ChampionTest4", 2)],
+                3: [("ChampionTest5", 6), ("ChampionTest6", 1)]
+            }
             updateOverlay(debug)  # Assuming updateOverlay can accept a list
         elif key == KeyCode.from_char('['):
             print("Exiting program.")
@@ -127,8 +141,6 @@ def getStats(tally, champion_info, champPool):
         top_champions[cost] = sorted_champs
 
     return top_champions
-
-
 
 def updateOverlay(stats_output):
     global overlay_app  # Ensure this is the instance of your overlay app
