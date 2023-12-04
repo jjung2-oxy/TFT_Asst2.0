@@ -20,16 +20,6 @@ def crop_image(img, name):
     cropped_img.save(name)
     return name
 
-def predict(imagepath):
-    try:
-        result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800)
-        champ_list = result[0].names
-        unit_ids = result[0].boxes.cls
-        boxes = result[0].boxes.xyxy[0]  # Modify based on the actual structure
-        return champ_list, unit_ids, boxes
-    except Exception as e:
-        print(f"Error during prediction: {e}")
-        return ([], [], [])
 
 def print_champions(champ_list, unit_ids):
     """
@@ -44,6 +34,23 @@ def print_champions(champ_list, unit_ids):
             temp.append(champ_list[unit_id])
         return temp
 
+def predict(imagepath):
+    try:
+        result = model.predict(imagepath, task='detect', mode='predict', verbose=False, conf=0.25, imgsz=800)
+        
+        # Check if the prediction result is empty
+        if result is None or len(result) == 0 or len(result[0].boxes.xyxy) == 0:
+            return ([], [], [])
+
+        champ_list = result[0].names
+        unit_ids = result[0].boxes.cls
+        boxes = result[0].boxes.xyxy[0]  # Modify based on the actual structure
+        return champ_list, unit_ids, boxes
+    except Exception as e:
+        print(f"Error during prediction: {e}")
+        return ([], [], [])
+
+
 def process_screenshots(screenshots):
     try:
         temp = []
@@ -51,17 +58,16 @@ def process_screenshots(screenshots):
             with tempfile.NamedTemporaryFile(suffix=".png", delete=False, mode='w+b') as tmpfile:
                 screenshot.save(tmpfile, format='PNG')
                 tmpfile_name = tmpfile.name
-            # Ensure that the file is closed before proceeding
             cropped_filename = crop_image(screenshot, tmpfile_name)
             result = predict(cropped_filename)
-            temp2 = print_champions(result[0], result[1])
+            
+            # Check if the result is not empty and has valid data
+            if result and result[0] and result[1]:
+                temp2 = print_champions(result[0], result[1])
+                for x in temp2:
+                    temp.append(x)
             os.remove(tmpfile_name)
             print(f"Processed screenshot #{index}")
-            for x in temp2:
-                temp.append(x)
         return temp
     except Exception as e:
         print(f"Error in process_screenshots: {e}")
-
-
-# Note: Implement the OCR.capture() and other related functions as needed.

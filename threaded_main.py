@@ -8,16 +8,24 @@ import sys
 from pynput.keyboard import Listener, KeyCode, Controller, Key
 import threading
 
+overlay_app = None
+
+def set_overlay_app(app):
+    global overlay_app
+    overlay_app = app
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-skp', '--simulate-keys', action='store_true', 
                         help='Enable simulation of key presses')
     args = parser.parse_args()
+
     if args.simulate_keys:
         print("Simulating keyboard input...\n\n\n")
+
     listener_thread = threading.Thread(target=start_listener, daemon=True)
     listener_thread.start()
-    listener_thread.join()
+    listener_thread.join()  
 
 def shopToOCR():
     try:
@@ -31,7 +39,7 @@ def shopToOCR():
 
 def processOCR(screenshot):
     text_list = []
-    time.sleep(2)
+    time.sleep(1)  
     try:
         for i in range(5):
             bbox = (
@@ -49,10 +57,8 @@ def processOCR(screenshot):
 
 def boardToModel():
     keyboard = Controller() 
+    SimulatePressedKeys = False  # Consider making this a parameter or a configurable setting.
 
-    ''' THIS IS WHERE YOU TURN ON AND OFF KEYPRESSES'''
-
-    SimulatePressedKeys = False
     try:
         print("Capturing screenshots for board modeling...")
         screenshots = []
@@ -60,39 +66,25 @@ def boardToModel():
             if SimulatePressedKeys: 
                 keyboard.press('q')
                 keyboard.release('q')
-            time.sleep(1)
+            time.sleep(1)  # Consider if this sleep is necessary or if it can be optimized.
             screenshot = OCR.capture(())
             screenshots.append(screenshot)
             print(f"Captured screenshot #{index + 1}")
+
         print("Processing screenshots...")
         champions = image_inference.process_screenshots(screenshots)
-        if champions is None or not champions:
+        if not champions:
             print("No champions processed or an error occurred.")
-            return  # Exit the function as there's nothing to process
-        tally = {}
+            updateOverlay()
+            return
 
-        # Iterate over the list and count each occurrence
-        for champion in champions:
-            if champion in tally:
-                tally[champion] += 1
-            else:
-                tally[champion] = 1
-
-
+        tally = {champion: champions.count(champion) for champion in set(champions)}
         champPool = file.champPool
         champion_info = file.champion_info
         print("Done processing screenshots")
-        if SimulatePressedKeys:
-            keyboard.press('q')
-            keyboard.release('q')
+        getStats(tally, champion_info, champPool)
+        updateOverlay()
 
-        for name, count in tally.items():
-            if name in champion_info:
-                champ_cost = champion_info[name]["cost"]
-                remaining_champs = champPool[f'{champ_cost}_cost'] - count
-                print(f"There are {remaining_champs} {name}'s left out of {champPool[f'{champ_cost}_cost']} ({champ_cost} cost)")
-            else:
-                pass
     except Exception as e:
         print(f"Error in boardToModel: {e}")
 
@@ -115,4 +107,16 @@ def start_listener():
     with Listener(on_press=on_press) as listener:
         listener.join()
 
+def getStats(tally, champion_info, champPool):
+    for name, count in tally.items():
+        if name in champion_info:
+            champ_cost = champion_info[name]["cost"]
+            remaining_champs = champPool[f'{champ_cost}_cost'] - count
+            print(f"There are {remaining_champs} {name}'s left out of {champPool[f'{champ_cost}_cost']} ({champ_cost} cost)")
+        else:
+            pass  # Consider handling the case where the name is not in champion_info.
 
+def updateOverlay():
+    global overlay_app  # Ensure this is the instance of your overlay app
+    string_list = ["String 1", "String 2", "String 3"]
+    overlay_app.custom_window.update_signal.emit(string_list)
