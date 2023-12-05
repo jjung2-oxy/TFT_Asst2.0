@@ -1,7 +1,7 @@
 import sys
 import time
 import threading
-import tkinter as tk
+'''import tkinter as tk'''
 from PyQt5.QtWidgets import QApplication
 import threaded_main
 import Files.interface as interface
@@ -24,7 +24,7 @@ def background_task():
 
 def run_overlay_app():
     global overlay_app
-    print("Running Overlay application...")
+    print("\n\nRunning Overlay application...\n\n")
     overlay_app = overlayNEW.OverlayApp(screen_scaling=1)
     threaded_main.set_overlay_app(overlay_app)
     overlay_app.run()
@@ -32,7 +32,7 @@ def run_overlay_app():
 
 def run_tkinter_app():
     global root
-    print("Running Tkinter application...")
+    print("\n\nRunning Tkinter application...\n\n")
     root = interface.interface()
     root.protocol("WM_DELETE_WINDOW", quit_application)
     root.mainloop()
@@ -57,16 +57,19 @@ def main():
     background_thread = threading.Thread(target=background_task)
     background_thread.start()
 
+    '''
     # Thread for the OverlayApp
-    overlay_thread = threading.Thread(target=run_overlay_app)
+    overlay_thread = threading.Thread(target=)
     overlay_thread.start()
+    '''
 
+    run_overlay_app()
     # Run Tkinter app in the main thread
     run_tkinter_app()
 
     # Wait for threads to complete
     background_thread.join()
-    overlay_thread.join()
+    '''overlay_thread.join()'''
 
 if __name__ == "__main__":
     main()
