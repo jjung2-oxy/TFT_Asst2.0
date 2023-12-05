@@ -52,6 +52,9 @@ class CustomWindow(QMainWindow):
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_NoSystemBackground, True)
 
+    def setTargetChamps(self):
+        self.target_champs = interface.get_curr_list()
+
     def update_overlay(self, stat_dict):
         self.string_dict = stat_dict  # Update the data for the textbox
         self.update()  # Trigger a repaint
@@ -61,20 +64,20 @@ class CustomWindow(QMainWindow):
         self.update()  # Trigger a repaint
 
     def close_window(self):
-        self.listener.stop()
         self.close()
 
     def paintEvent(self, event=None):
-        painter = QPainter(self)
-        painter.setOpacity(self.opacity)
-        print("highlight function is called")
-        self.setTargetChamps()
-        self.highlight(painter)
-        self.drawNewTextBox(painter, self.string_dict)  # Use the updated data
+        try: 
+            painter = QPainter(self)
+            painter.setOpacity(self.opacity)
+            self.setTargetChamps()
+            self.highlight(painter)
+            self.drawNewTextBox(painter, self.string_dict)  # Use the updated data
+        except Exception as e:
+            print(f"Error in paintEvent: {e}", file=sys.stderr)
 
     def highlight(self, painter):
         painter.setPen(QPen(Qt.red, 5, Qt.SolidLine))
-        print(f"target_list = {self.target_champs}")
         for idx, champ in enumerate(self.curr_shop):
             if champ in self.target_champs:
                 self.drawHighlightRectangle(painter, idx)

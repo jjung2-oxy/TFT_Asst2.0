@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import Toplevel, Label
 import re
+import sys
 
 curr_list = []
 
@@ -17,16 +18,18 @@ def strip_parentheses(name):
         return name.strip()
 def on_button_toggle(line, button_var):
     def toggle():
-        stripped_line = strip_parentheses(line)
-        if button_var.get():
-            # Button is pressed, add to the list
-            if stripped_line not in curr_list:
-                curr_list.append(stripped_line)
-        else:
-            # Button is unpressed, remove from the list
-            if stripped_line in curr_list:
-                curr_list.remove(stripped_line)
-        print("current list: ", curr_list)
+        try: 
+            stripped_line = strip_parentheses(line)
+            if button_var.get():
+                # Button is pressed, add to the list
+                if stripped_line not in curr_list:
+                    curr_list.append(stripped_line)
+            else:
+                # Button is unpressed, remove from the list
+                if stripped_line in curr_list:
+                    curr_list.remove(stripped_line)
+        except Exception as e:
+            print(f"Error in toggle: {e}", file=sys.stderr)
     return toggle
 
 

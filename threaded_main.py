@@ -36,26 +36,26 @@ def shopToOCR():
         screenshot = OCR.capture(())
         return processOCR(screenshot)
     except Exception as e:
-        print(f"Error in shopToOCR: {e}")
-        return []
+        print(f"Error in shopToOCR: {e}", file=sys.stderr)
+        # Log the error details here
 
 def processOCR(screenshot):
-    text_list = []
-    time.sleep(1)  
+    text_list = [] 
     try:
         for i in range(5):
             bbox = (
                 CHAMP_TEXT_LEFT + (i * CHAMP_SPACING), 
-                CHAMP_TEXT_TOP, 
-                CHAMP_TEXT_RIGHT + (i * CHAMP_SPACING), 
-                CHAMP_TEXT_BOTTOM)
+                CHAMP_TEXT_TOP, CHAMP_TEXT_RIGHT + 
+                (i * CHAMP_SPACING), CHAMP_TEXT_BOTTOM
+                )
             target_string = OCR.ocr(bbox, screenshot)
             closest = file.find_closest(target_string, file.set10_champs)
             text_list.append(closest)
-        return text_list
+        update2(text_list)
+        print("shopToOCR Done!")  
+
     except Exception as e:
         print(f"Error in processOCR: {e}")
-        return []
 
 def boardToModel():
     keyboard = Controller() 
@@ -83,9 +83,9 @@ def boardToModel():
         tally = {champion: champions.count(champion) for champion in set(champions)}
         champPool = file.champPool
         champion_info = file.champion_info
-        print("Done processing screenshots")
         stats_output = getStats(tally, champion_info, champPool)
-        updateOverlay(stats_output)  
+        updateOverlay(stats_output)
+        print("boardToModel Done!")  
 
     except Exception as e:
         print(f"Error in boardToModel: {e}")
@@ -96,9 +96,7 @@ def on_press(key):
         # OCR
         if key == KeyCode.from_char('d'):
             print("d key pressed! \n ShopToOCR Running...")
-            text_list = shopToOCR()
-            update2(text_list) # CURRENTLY STOPPING RIGHT HERE SINCE THERE ARE
-
+            shopToOCR()
             '''
             List of things shopToOCR() does
             1. Captures screenshot

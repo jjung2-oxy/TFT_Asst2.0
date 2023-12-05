@@ -1,7 +1,7 @@
 import sys
 import time
 import threading
-'''import tkinter as tk'''
+import tkinter as tk
 from PyQt5.QtWidgets import QApplication
 import threaded_main
 import Files.interface as interface
@@ -53,23 +53,23 @@ def quit_application():
     sys.exit(0)
     
 def main():
-    # Thread for the background task
-    background_thread = threading.Thread(target=background_task)
-    background_thread.start()
+    try:
+        # Thread for the background task
+        background_thread = threading.Thread(target=background_task)
+        background_thread.start()
+    
+        # Thread for the OverlayApp
+        overlay_thread = threading.Thread(target=run_overlay_app)
+        overlay_thread.start()
+        
+        # Run Tkinter app in the main thread
+        run_tkinter_app()
 
-    '''
-    # Thread for the OverlayApp
-    overlay_thread = threading.Thread(target=)
-    overlay_thread.start()
-    '''
-
-    run_overlay_app()
-    # Run Tkinter app in the main thread
-    run_tkinter_app()
-
-    # Wait for threads to complete
-    background_thread.join()
-    '''overlay_thread.join()'''
+        # Wait for threads to complete
+        background_thread.join()
+        overlay_thread.join()
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
 
 if __name__ == "__main__":
     main()
