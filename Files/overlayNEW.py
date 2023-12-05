@@ -2,7 +2,6 @@ import sys
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPainter, QPen, QFont
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from pynput.keyboard import Listener, KeyCode
 import Files.screen_coords as screen_coords
 import threaded_main as tm
 import Files.interface as interface
@@ -20,8 +19,8 @@ class OverlayApp:
         self.custom_window.setWindowFlags(self.custom_window.windowFlags() | Qt.WindowStaysOnTopHint)
         self.custom_window.activateWindow()
         self.custom_window.raise_()
-      
-        print("Running OverlayApp...")
+
+        ''' CURRENT ISSUE '''
         sys.exit(self.app.exec_())
 
     def close_window(self):
@@ -29,13 +28,11 @@ class OverlayApp:
         self.app.quit()
 
 class CustomWindow(QMainWindow):
-    keyPressed = pyqtSignal(KeyCode)
     update_signal = pyqtSignal(dict)
 
     def __init__(self, app, screen_scaling, opacity, parent=None):
         super().__init__(parent)
         self.update_signal.connect(self.update_overlay)
-        self.listener = Listener(on_release=self.on_release)
         self.app = app
         self.screen_scaling = screen_scaling
         self.opacity = opacity
@@ -52,17 +49,11 @@ class CustomWindow(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_NoSystemBackground, True)
-        self.listener.start()
 
     def update_overlay(self, stat_dict):
         self.string_dict = stat_dict  # Update the data for the textbox
         self.update()  # Trigger a repaint
-
-    def on_release(self, key):
-        if hasattr(key, 'char') and key.char == 'd':
-            self.shouldDraw = True
-            self.update()
-
+        
     def close_window(self):
         self.listener.stop()
         self.close()

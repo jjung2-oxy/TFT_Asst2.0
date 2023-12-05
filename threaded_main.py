@@ -27,6 +27,10 @@ def main():
     listener_thread.start()
     listener_thread.join()  
 
+def start_listener():
+    with Listener(on_press=on_press) as listener:
+        listener.join()
+
 def shopToOCR():
     try:
         print("Capturing screenshot for OCR...")
@@ -57,7 +61,7 @@ def processOCR(screenshot):
 
 def boardToModel():
     keyboard = Controller() 
-    SimulatePressedKeys = False  # Consider making this a parameter or a configurable setting.
+    SimulatePressedKeys = False
 
     try:
         print("Capturing screenshots for board modeling...")
@@ -66,7 +70,7 @@ def boardToModel():
             if SimulatePressedKeys: 
                 keyboard.press('q')
                 keyboard.release('q')
-            time.sleep(1)  # Consider if this sleep is necessary or if it can be optimized.
+            time.sleep(1)
             screenshot = OCR.capture(())
             screenshots.append(screenshot)
             print(f"Captured screenshot #{index + 1}")
@@ -75,10 +79,9 @@ def boardToModel():
         champions = image_inference.process_screenshots(screenshots)
         if not champions:
             print("No champions processed or an error occurred.")
-            updateOverlay() # CURRENTLY STOPPING RIGHT HERE SINCE THERE ARE NO CHAMPIONS.
             return
         
-        # code here currently not reached
+        ''' RETURN CONTENT '''
         tally = {champion: champions.count(champion) for champion in set(champions)}
         champPool = file.champPool
         champion_info = file.champion_info
@@ -91,15 +94,33 @@ def boardToModel():
 
 def on_press(key):
     try:
+        ''' HERE IS WHERE THE KEYBINDS ARE HANDLED. '''
         # OCR
         if key == KeyCode.from_char('d'):
             print("d key pressed! \n ShopToOCR Running...")
             text_list = shopToOCR()
             print(text_list)
+            '''
+            List of things shopToOCR() does
+            1. Captures screenshot
+            2. Processes screenshot
+            3. Runs OCR on the 5 champion areas
+            4. Outlines desired champions in red
+            '''
+
         # BOARDTOMODEL
         elif key == KeyCode.from_char(']'):
             print("] key pressed! \n ShopToOCR Running...")
             boardToModel()
+            '''
+            List of things boardToModel() does
+            1. Captures screenshots
+            2. Processes screenshots
+            3. Runs inference on the screenshots
+            4. Create a list of champion names and their counts
+            4. Updates the overlay
+            '''
+
         # DEBUG KEYBIND
         elif key == KeyCode.from_char('='):
             print("'=' key pressed! Triggering update_overlay for debugging.")
@@ -109,27 +130,28 @@ def on_press(key):
             3: [("ChampionA3", 6), ("ChampionB3", 4), ("ChampionC3", 1)],
             4: [("ChampionA4", 2), ("ChampionB4", 1)]
             }
-            updateOverlay(debug)  # Assuming updateOverlay can accept a list
-        # QUIT APPLICATIONS
-        elif key == KeyCode.from_char('='):
+            updateOverlay(debug)
+
+        # UPDATE DEBUG KEYBIND
+        elif key == KeyCode.from_char('-'):
             print("'-' key pressed! CHANGING CONTENTS.")
             debug = {
                 1: [("ChampionTest1", 4), ("ChampionTest2", 3)],
                 2: [("ChampionTest3", 5), ("ChampionTest4", 2)],
                 3: [("ChampionTest5", 6), ("ChampionTest6", 1)]
             }
-            updateOverlay(debug)  # Assuming updateOverlay can accept a list
+            updateOverlay(debug)
+
+        # QUIT APPLICATIONS
         elif key == KeyCode.from_char('['):
             print("Exiting program.")
             sys.exit(0)
+
     except Exception as e:
         print(f"Error in on_press: {e}")
 
 
-def start_listener():
-    with Listener(on_press=on_press) as listener:
-        listener.join()
-
+''' HERE IS WHERE THE STATS FROM boardToModel() ARE HANDLED. '''
 def getStats(tally, champion_info, champPool):
     champions_by_cost = {}
     for name, count in tally.items():
@@ -146,6 +168,7 @@ def getStats(tally, champion_info, champPool):
 
     return top_champions
 
+''' Sends signal containing the dictionary to update the overlay textbox. '''
 def updateOverlay(stats_output):
     global overlay_app  # Ensure this is the instance of your overlay app
     overlay_app.custom_window.update_signal.emit(stats_output)
