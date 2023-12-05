@@ -29,9 +29,7 @@ def main():
 
 def shopToOCR():
     try:
-        print("Capturing screenshot for OCR...")
         screenshot = OCR.capture(())
-        print("Processing screenshot...")
         return processOCR(screenshot)
     except Exception as e:
         print(f"Error in shopToOCR: {e}")
@@ -48,7 +46,7 @@ def processOCR(screenshot):
                 CHAMP_TEXT_RIGHT + (i * CHAMP_SPACING), 
                 CHAMP_TEXT_BOTTOM)
             target_string = OCR.ocr(bbox, screenshot)
-            closest = file.find_closest(target_string, file.set9_champs)
+            closest = file.find_closest(target_string, file.set10_champs)
             text_list.append(closest)
         return text_list
     except Exception as e:
@@ -84,7 +82,7 @@ def boardToModel():
         champion_info = file.champion_info
         print("Done processing screenshots")
         stats_output = getStats(tally, champion_info, champPool)
-        updateOverlay(stats_output) # 
+        updateOverlay(stats_output)  
 
     except Exception as e:
         print(f"Error in boardToModel: {e}")
@@ -95,11 +93,13 @@ def on_press(key):
         if key == KeyCode.from_char('d'):
             print("d key pressed! \n ShopToOCR Running...")
             text_list = shopToOCR()
-            print(text_list)
+            update2(text_list) # CURRENTLY STOPPING RIGHT HERE SINCE THERE ARE
+
         # BOARDTOMODEL
-        elif key == KeyCode.from_char(']'):
-            print("] key pressed! \n ShopToOCR Running...")
+        elif key == KeyCode.from_char('\\'):
+            print("] key pressed! \n boardToModel Running...")
             boardToModel()
+
         # DEBUG KEYBIND
         elif key == KeyCode.from_char('='):
             print("'=' key pressed! Triggering update_overlay for debugging.")
@@ -110,8 +110,9 @@ def on_press(key):
             4: [("ChampionA4", 2), ("ChampionB4", 1)]
             }
             updateOverlay(debug)  # Assuming updateOverlay can accept a list
-        # QUIT APPLICATIONS
-        elif key == KeyCode.from_char('='):
+
+        # CHANGE DATA 
+        elif key == KeyCode.from_char('-'):
             print("'-' key pressed! CHANGING CONTENTS.")
             debug = {
                 1: [("ChampionTest1", 4), ("ChampionTest2", 3)],
@@ -119,12 +120,13 @@ def on_press(key):
                 3: [("ChampionTest5", 6), ("ChampionTest6", 1)]
             }
             updateOverlay(debug)  # Assuming updateOverlay can accept a list
+
+        # QUIT APPLICATION 
         elif key == KeyCode.from_char('['):
             print("Exiting program.")
             sys.exit(0)
     except Exception as e:
         print(f"Error in on_press: {e}")
-
 
 def start_listener():
     with Listener(on_press=on_press) as listener:
@@ -150,7 +152,6 @@ def updateOverlay(stats_output):
     global overlay_app  # Ensure this is the instance of your overlay app
     overlay_app.custom_window.update_signal.emit(stats_output)
 
-def getShop():
-    # Implement the logic to retrieve shop data
-    # This is just a placeholder example
-    return ["Item 1", "Item 2", "Item 3"]
+def update2(curr_shop):
+    global overlay_app  # Ensure this is the instance of your overlay app
+    overlay_app.custom_window.update2.emit(curr_shop)

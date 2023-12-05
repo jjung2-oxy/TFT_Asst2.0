@@ -24,6 +24,9 @@ def ocr(bbox, screenshot):
 
             # draw.rectangle([x, y, x + w, y + h], outline='red')
             # draw.text((x, y - 10), text, fill='red', font=font)
+    
+    ''' DEBUGGING '''
+    text = 'Thresh'
     try:
         return text
     except:

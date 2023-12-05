@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen, QFont
+from PyQt5.QtGui import QPainter, QPen, QFont, QFontMetrics
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from pynput.keyboard import Listener, KeyCode
 import Files.screen_coords as screen_coords
@@ -31,10 +31,12 @@ class OverlayApp:
 class CustomWindow(QMainWindow):
     keyPressed = pyqtSignal(KeyCode)
     update_signal = pyqtSignal(dict)
+    update2 = pyqtSignal(list)
 
     def __init__(self, app, screen_scaling, opacity, parent=None):
         super().__init__(parent)
         self.update_signal.connect(self.update_overlay)
+        self.update2.connect(self.update_overlay2)
         self.listener = Listener(on_release=self.on_release)
         self.app = app
         self.screen_scaling = screen_scaling
@@ -54,8 +56,15 @@ class CustomWindow(QMainWindow):
         self.setAttribute(Qt.WA_NoSystemBackground, True)
         self.listener.start()
 
+    def setTargetChamps(self):
+        self.target_champs = interface.get_curr_list()
+
     def update_overlay(self, stat_dict):
         self.string_dict = stat_dict  # Update the data for the textbox
+        self.update()  # Trigger a repaint
+
+    def update_overlay2(self, curr_shop):
+        self.curr_shop = curr_shop   # Update the data for the textbox
         self.update()  # Trigger a repaint
 
     def on_release(self, key):
@@ -70,13 +79,14 @@ class CustomWindow(QMainWindow):
     def paintEvent(self, event=None):
         painter = QPainter(self)
         painter.setOpacity(self.opacity)
-        painter1 = QPainter(self)
-        self.highlight(painter1)
+        print("highlight function is called")
+        self.setTargetChamps()
+        self.highlight(painter)
         self.drawNewTextBox(painter, self.string_dict)  # Use the updated data
 
-    # Reset the flag after drawing
     def highlight(self, painter):
         painter.setPen(QPen(Qt.red, 5, Qt.SolidLine))
+        print(f"target_list = {self.target_champs}")
         for idx, champ in enumerate(self.curr_shop):
             if champ in self.target_champs:
                 self.drawHighlightRectangle(painter, idx)
@@ -91,26 +101,38 @@ class CustomWindow(QMainWindow):
 
     def drawNewTextBox(self, painter, stats_dict):
         textbox_x, textbox_y = 10, 10
-        textbox_width = 200  # Initial width, adjust as needed
         text_y_offset = 20
         y = textbox_y + text_y_offset
 
-        # Calculate the required height of the textbox
+        # Set the font for the text
+        font = QFont()
+        font.setPointSize(10)
+        painter.setFont(font)
+
+        # Use QFontMetrics to calculate text width
+        font_metrics = QFontMetrics(font)
+        max_text_width = 0
+
+        # Calculate the required height and maximum width of the textbox
         textbox_height = text_y_offset  # Start with the offset as initial height
         for cost, champs in stats_dict.items():
+            line = f"Top champions for cost {cost}:"
+            max_text_width = max(max_text_width, font_metrics.width(line))
             textbox_height += text_y_offset  # Add space for the cost header
-            textbox_height += len(champs) * text_y_offset  # Add space for each champion
+            for name, count in champs:
+                remaining_champs = self.champPool[f'{cost}_cost'] - count
+                line = f"  {name} - {count} tallied, {remaining_champs} remaining"
+                max_text_width = max(max_text_width, font_metrics.width(line))
+                textbox_height += text_y_offset  # Add space for each champion
+
+        # Adjust the width of the textbox
+        textbox_width = max_text_width + 20  # Add some padding
 
         # Draw the textbox
         painter.setOpacity(1.0)  # Ensure full opacity for the textbox
         painter.setBrush(Qt.black)
         painter.setPen(QPen(Qt.white))
         painter.drawRect(textbox_x, textbox_y, textbox_width, textbox_height)
-
-        # Set the font for the text
-        font = QFont()
-        font.setPointSize(10)
-        painter.setFont(font)
 
         # Draw the text inside the textbox
         y = textbox_y + text_y_offset
@@ -121,6 +143,7 @@ class CustomWindow(QMainWindow):
                 remaining_champs = self.champPool[f'{cost}_cost'] - count
                 painter.drawText(textbox_x + 10, y, f"  {name} - {count} tallied, {remaining_champs} remaining")
                 y += text_y_offset
+
 
 if __name__ == "__main__":
     overlay_app = OverlayApp(screen_scaling=1, opacity=0.8)
