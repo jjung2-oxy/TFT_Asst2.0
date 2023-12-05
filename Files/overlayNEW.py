@@ -51,7 +51,6 @@ class CustomWindow(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_NoSystemBackground, True)
-        self.listener.start()
 
     def update_overlay(self, stat_dict):
         self.string_dict = stat_dict  # Update the data for the textbox
