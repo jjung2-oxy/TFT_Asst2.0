@@ -3,6 +3,7 @@ import torch
 import os
 import time
 import tempfile
+import sys
 
 # Initialize the YOLO model
 model = YOLO(r"Files/weights/DEPLOY.pt")
@@ -69,5 +70,7 @@ def process_screenshots(screenshots):
             os.remove(tmpfile_name)
             print(f"Processed screenshot #{index}")
         return temp
+    except IOError as e:
+        print(f"I/O Error: {e}", file=sys.stderr)
     except Exception as e:
-        print(f"Error in process_screenshots: {e}")
+        print(f"General Error: {e}", file=sys.stderr)

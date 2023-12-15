@@ -1,4 +1,5 @@
 import Levenshtein
+import sys
 
 
 set10_champs = [
@@ -116,13 +117,17 @@ champion_info = create_champion_dict(set10_champs, cost_details)
 champPool = {"1_cost":29, "2_cost":22, "3_cost":18, "4_cost":12, "5_cost":10}
 
 def find_closest(target, string_list):
-    closest_string = None
-    min_distance = float('inf')
+    try:
+        closest_string = None
+        min_distance = float('inf')
 
-    for s in string_list:
-        distance = Levenshtein.distance(target, s)
-        if distance < min_distance:
-            min_distance = distance
-            closest_string = s
+        for s in string_list:
+            distance = Levenshtein.distance(target, s)
+            if distance < min_distance:
+                min_distance = distance
+                closest_string = s
 
-    return closest_string
+        return closest_string
+    except Exception as e:
+        print(f"Error in find_closest: {e}", file=sys.stderr)
+        return None

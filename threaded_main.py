@@ -33,31 +33,29 @@ def start_listener():
 
 def shopToOCR():
     try:
-        print("Capturing screenshot for OCR...")
         screenshot = OCR.capture(())
-        print("Processing screenshot...")
         return processOCR(screenshot)
     except Exception as e:
-        print(f"Error in shopToOCR: {e}")
-        return []
+        print(f"Error in shopToOCR: {e}", file=sys.stderr)
+        # Log the error details here
 
 def processOCR(screenshot):
-    text_list = []
-    time.sleep(1)  
+    text_list = [] 
     try:
         for i in range(5):
             bbox = (
                 CHAMP_TEXT_LEFT + (i * CHAMP_SPACING), 
-                CHAMP_TEXT_TOP, 
-                CHAMP_TEXT_RIGHT + (i * CHAMP_SPACING), 
-                CHAMP_TEXT_BOTTOM)
+                CHAMP_TEXT_TOP, CHAMP_TEXT_RIGHT + 
+                (i * CHAMP_SPACING), CHAMP_TEXT_BOTTOM
+                )
             target_string = OCR.ocr(bbox, screenshot)
-            closest = file.find_closest(target_string, file.set9_champs)
+            closest = file.find_closest(target_string, file.set10_champs)
             text_list.append(closest)
-        return text_list
+        update2(text_list)
+        print("shopToOCR Done!")  
+
     except Exception as e:
         print(f"Error in processOCR: {e}")
-        return []
 
 def boardToModel():
     keyboard = Controller() 
@@ -85,9 +83,9 @@ def boardToModel():
         tally = {champion: champions.count(champion) for champion in set(champions)}
         champPool = file.champPool
         champion_info = file.champion_info
-        print("Done processing screenshots")
         stats_output = getStats(tally, champion_info, champPool)
-        updateOverlay(stats_output) # 
+        updateOverlay(stats_output)
+        print("boardToModel Done!")  
 
     except Exception as e:
         print(f"Error in boardToModel: {e}")
@@ -98,8 +96,7 @@ def on_press(key):
         # OCR
         if key == KeyCode.from_char('d'):
             print("d key pressed! \n ShopToOCR Running...")
-            text_list = shopToOCR()
-            print(text_list)
+            shopToOCR()
             '''
             List of things shopToOCR() does
             1. Captures screenshot
@@ -109,8 +106,8 @@ def on_press(key):
             '''
 
         # BOARDTOMODEL
-        elif key == KeyCode.from_char(']'):
-            print("] key pressed! \n ShopToOCR Running...")
+        elif key == KeyCode.from_char('\\'):
+            print("] key pressed! \n boardToModel Running...")
             boardToModel()
             '''
             List of things boardToModel() does
@@ -173,7 +170,6 @@ def updateOverlay(stats_output):
     global overlay_app  # Ensure this is the instance of your overlay app
     overlay_app.custom_window.update_signal.emit(stats_output)
 
-def getShop():
-    # Implement the logic to retrieve shop data
-    # This is just a placeholder example
-    return ["Item 1", "Item 2", "Item 3"]
+def update2(curr_shop):
+    global overlay_app  # Ensure this is the instance of your overlay app
+    overlay_app.custom_window.update2.emit(curr_shop)

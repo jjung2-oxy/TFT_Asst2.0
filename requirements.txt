@@ -2,15 +2,11 @@ numpy
 opencv_python
 opencv_python_headless
 Roboflow
-supervision
 Pillow
 PyAutoGUI
 pynput
 pytesseract
-threading
 torch
 python-Levenshtein
 PyQt5
 ultralytics
-scikit-learn
-scipy

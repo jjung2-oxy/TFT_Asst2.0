@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import Toplevel, Label
 import re
+import sys
 
 curr_list = []
 
@@ -15,12 +16,22 @@ def strip_parentheses(name):
         return name[:pos].strip()
     else:
         return name.strip()
-def on_button_toggle(line):
+def on_button_toggle(line, button_var):
     def toggle():
-        # print(f"Button for line: '{line}' toggled!")
-        curr_list.append(strip_parentheses(line))
-        print("current list: ", curr_list)
+        try: 
+            stripped_line = strip_parentheses(line)
+            if button_var.get():
+                # Button is pressed, add to the list
+                if stripped_line not in curr_list:
+                    curr_list.append(stripped_line)
+            else:
+                # Button is unpressed, remove from the list
+                if stripped_line in curr_list:
+                    curr_list.remove(stripped_line)
+        except Exception as e:
+            print(f"Error in toggle: {e}", file=sys.stderr)
     return toggle
+
 
 def create_tooltip(widget, text):
     def on_enter(event):
@@ -47,7 +58,7 @@ def interface():
     root.title("Tkinter Dynamic Button Layout")
 
     # Read lines from a text file
-    with open("./Files/set9_champs.txt", "r") as file:
+    with open("./Files/set10_champs.txt", "r") as file:
         lines = [line.strip() for line in file if line.strip()]
 
     # Variables to control the layout
@@ -93,7 +104,7 @@ def interface():
         button_var = tk.BooleanVar()
         button = tk.Checkbutton(root, text=line.split('(')[0][:button_width], 
                                 indicatoron=False, selectcolor="light grey", 
-                                var=button_var, command=on_button_toggle(line), 
+                                var=button_var, command=on_button_toggle(line, button_var), 
                                 relief="raised")
         button.grid(row=current_row, column=current_column, sticky="nsew")
 
