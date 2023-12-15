@@ -30,8 +30,17 @@ The Team Fight Tactics Assistant Tool is an innovative application designed to e
    pip install -r requirements.txt
 
 ### Usage
+
+- **Disclaimer**
+  The Team Fight Tactics Window must be set to "Borderless Fullscreen".
+  If set to "Fullscreen" the overlay will not be visible.
+
 - **Run the main script to start the tool:**
   ```bash
   python main.py
   
 Adjust preferences using the user interface that appears on screen.
+
+### Feature Keybinds:
+- Press "\\" to activate the Real-time object detection functionality and display current game statistics.
+- Press "d" (also purposefully bound to the in-game shop refresh keybind) to activate the OCR functionality, which causes the overlay to highlight any desired units in red.
